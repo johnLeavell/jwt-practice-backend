@@ -1,5 +1,9 @@
 import './App.css';
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import Login from './components/Login';
+import { BrowserRouter, Route } from 'react-router-dom'
+import { SignUp } from './components/SignUp';
+import Home from './components/Home';
 
 export class App extends Component {
   constructor(){
@@ -7,6 +11,9 @@ export class App extends Component {
     this.state = {
       users: [],
       balloons: [],
+      loggedInUser: {
+        balloons: []
+      }
     }
   }
 
@@ -34,14 +41,36 @@ export class App extends Component {
       }))
   }
 
+  handleUserLogin =(userLogin) => {
+    const reqObj ={
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userLogin)
+    }
+
+    fetch(`http:localhost:3000/login`, reqObj)
+    .then(resp => resp.json())
+    .then( user => {
+      this.setState({
+        loggedInUser: user
+      });
+    })
+  }
+
 
   render() {
     console.log(this.state);
     
     return (
-      <div>
-
-      </div>
+      <BrowserRouter>
+        <div>
+          <Route path='/login' render={ (props) => <Login {...props} handleUserLogin={this.handleUserLogin} /> } />          
+          <Route exact path='/signup' component={SignUp} />
+          <Route exact path='/home' component={Home} />
+        </div>
+      </BrowserRouter>
     )
   }
 }
